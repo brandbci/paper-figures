@@ -1,13 +1,15 @@
 # %%
 import os
 from copy import deepcopy
+from glob import glob
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-
+from matplotlib import cm
+from matplotlib.patches import Circle
 
 # directory containing the data files
 DATA_DIR = '/snel/share/share/data/brand/bci_control_t11'
@@ -23,24 +25,28 @@ FIXED_XMAX = None
 # data files to load
 DATA_FILES = {
     'fig3b-c': '230517T1731_rnn_graph_timing.csv',
-    'figS1b-c': '230517T1634_ole_graph_timing.csv'
+    'fig3d': 't11_230507_012_cursor_pos*.csv',
+    'figS1b-c': '230517T1634_ole_graph_timing.csv',
+    'figS1d': 't11_230507_003_cursor_pos*.csv',
 }
 
 # %%
 # Load data
 timing_dfs = {}
-for fig_name, data_file in DATA_FILES.items():
+timing_files = {k: v for k, v in DATA_FILES.items() if 'timing' in v}
+for fig_name, data_file in timing_files.items():
     data_path = os.path.join(DATA_DIR, data_file)
     with open(data_path, 'r') as f:
         timing_dfs[fig_name] = pd.read_csv(f)
 
 os.makedirs(PLOT_DIR, exist_ok=True)
 
+# %%
+# configure matplotlib
 matplotlib.style.use('seaborn-colorblind')
 matplotlib.style.use('../paper.mplstyle')
 matplotlib.rcParams['font.size'] = 10
 
-# %%
 # make matplotlib color palette match seaborn
 sns.set_palette("colorblind")
 
@@ -159,5 +165,73 @@ for fig_name, timing_df in timing_dfs.items():
     plt.tight_layout()
     plt.savefig(os.path.join(PLOT_DIR, f'{fig_name}.pdf'), dpi=300)
     plt.show()
+
+# %%
+# Plot cursor position from T11 session
+cursor_pos_files = {k: v for k, v in DATA_FILES.items() if 'cursor_pos' in v}
+
+def get_csv_key(csv_file):
+    return os.path.basename(csv_file).split('_')[-1].split('.')[0]
+
+def csvs_to_df_dict(csv_pattern):
+    csv_files = glob(os.path.join(DATA_DIR, csv_pattern))
+    return {get_csv_key(f): pd.read_csv(f) 
+             for f in csv_files}
+
+kin_fields = ['cursorData_X', 'cursorData_Y']
+for fig_name, file_pattern in cursor_pos_files.items():
+    # load data
+    data_dict = csvs_to_df_dict(file_pattern)
+
+    # load dataframes
+    kin_df = data_dict['kin'].set_index('clock_time')
+    trial_info = data_dict['trials']
+
+    # determine conditions
+    conditions = trial_info['cond_id'].unique()
+    conditions = conditions[conditions > 0]
+    conditions.sort()
+
+    # plot targets for each condition
+    cmap = cm.get_cmap('tab10')
+    patches = []
+    fig, ax = plt.subplots(figsize=(2, 2))
+    for ic, cond in enumerate(conditions):
+        cond_mask = trial_info['cond_id'] == cond
+        cond_info = trial_info[cond_mask].iloc[0, :]
+        x, y = cond_info[['trial_info_target_X', 'trial_info_target_Y']]
+        radius = cond_info['trial_info_target_radius']
+        ax.add_patch(
+            Circle((x, y), radius, edgecolor='k', facecolor=((0, 0, 0, 0))))
+
+    # find outward trials for this condition
+    mask = np.all((
+        trial_info['cond_id'] > 0,
+    ),
+                axis=0)
+    tinfo = trial_info[mask]
+
+    # plot data for each trial
+    for trial_id in tinfo.index:
+        info = tinfo.loc[trial_id, :]
+        start_time = info['start_time']
+        end_time = info['end_time']
+        cond_id = info['cond_id']
+        cursor_pos = kin_df.loc[start_time:end_time, kin_fields].values
+        ax.plot(cursor_pos[0, 0],
+                cursor_pos[0, 1],
+                'o',
+                color=cmap(cond_id - 1),
+                markersize=2)
+        ax.plot(cursor_pos[:, 0],
+                cursor_pos[:, 1],
+                color=cmap(cond_id - 1),
+                linewidth=1)
+    ax.set_aspect('equal', 'box')
+    ax.set_xlabel('X Position (pixels)')
+    ax.set_ylabel('Y Position (pixels)')
+    plt.axis('off')
+    plt.tight_layout()
+    plt.savefig(os.path.join(PLOT_DIR, f'{fig_name}.pdf'))
 
 # %%
