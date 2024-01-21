@@ -10,14 +10,14 @@ import seaborn as sns
 
 # directory containing the data files
 DATA_DIR = '/snel/share/share/data/brand/pubsub'
+# directory to save plots
+PLOT_DIR = 'plots'
 # whether to use the same number of samples for each condition
 FIXED_SAMPLE_COUNT = True
 # number of samples to use for each condition
 N_SAMPLES = 300_000
 # whether to share the x-axis for histograms
 HIST_SHAREX = True
-# directory to save plots
-PLOT_DIR = 'plots'
 # data files
 vary_channels_file = '220715T0846_pubsub_vary_channels.csv'
 vary_sample_rate_file = '230522T2042_pubsub_vary_sample_rate.csv'
