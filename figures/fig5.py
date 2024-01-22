@@ -16,7 +16,7 @@ PLOT_DIR = 'plots'
 speech_sim_data_file = 'mic_sim_data.mat'
 speech_sim_latency_file = 'mic_sim_latencies.mat'
 cursor_sim_data_file = 'sim_dataset.pkl'
-cursor_sim_latency_file = '230808T0219_latency_df.csv'
+cursor_sim_latency_file = '230808T0219_cursor_sim_latency.csv'
 
 # configure matplotlib
 matplotlib.style.use('seaborn-colorblind')
