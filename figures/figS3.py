@@ -23,6 +23,7 @@ FIXED_SAMPLE_COUNT = True
 # data files
 data_file = '240111T0948_pubsub_vary_multi*.csv'
 
+
 def parse_test_id(test_id):
     if isinstance(test_id, str):
         n_nodes, n_chans = test_id.split('-')
@@ -33,13 +34,15 @@ def parse_test_id(test_id):
         n_chans = DEFAULT_N_CHANS
     return n_nodes, n_chans
 
+
 def get_csv_key(csv_file):
     return os.path.basename(csv_file).split('_')[-1].split('.')[0]
 
+
 def csvs_to_df_dict(csv_pattern):
     csv_files = glob(os.path.join(DATA_DIR, csv_pattern))
-    return {get_csv_key(f): pd.read_csv(f) 
-             for f in csv_files}
+    return {get_csv_key(f): pd.read_csv(f) for f in csv_files}
+
 
 # Configure matplotlib
 matplotlib.style.use('seaborn-colorblind')
@@ -117,12 +120,8 @@ for i_n, n_nodes in enumerate([2, 3, 4, 5]):
                   mec='k',
                   mew=1,
                   clip_on=False)
-    axes[i_n, 0].plot([1], [0],
-                      transform=axes[i_n, 0].transAxes,
-                      **kwargs)
-    axes[i_n, 1].plot([0], [0],
-                      transform=axes[i_n, 1].transAxes,
-                      **kwargs)
+    axes[i_n, 0].plot([1], [0], transform=axes[i_n, 0].transAxes, **kwargs)
+    axes[i_n, 1].plot([0], [0], transform=axes[i_n, 1].transAxes, **kwargs)
 
 plt.tight_layout()
 fig.subplots_adjust(wspace=0.025)

@@ -13,7 +13,7 @@ DATA_DIR = '/snel/share/share/data/brand'
 PLOT_DIR = 'plots'
 
 # data files
-speech_sim_data_file =  'mic_sim_data.mat'
+speech_sim_data_file = 'mic_sim_data.mat'
 speech_sim_latency_file = 'mic_sim_latencies.mat'
 cursor_sim_data_file = 'sim_dataset.pkl'
 cursor_sim_latency_file = '230808T0219_latency_df.csv'
@@ -31,11 +31,12 @@ os.makedirs(PLOT_DIR, exist_ok=True)
 
 # %%
 # Load speech sim data
-mic_sim_data = scipy.io.loadmat(os.path.join(DATA_DIR, 'speech_sim',
-                                             speech_sim_data_file))
+mic_sim_data = scipy.io.loadmat(
+    os.path.join(DATA_DIR, 'speech_sim', speech_sim_data_file))
 
 # Load cursor sim data
-with open(os.path.join(DATA_DIR, 'simulator', cursor_sim_data_file), 'rb') as f:
+with open(os.path.join(DATA_DIR, 'simulator', cursor_sim_data_file),
+          'rb') as f:
     gdf = pickle.load(f)
 
 gdf['ts_end_fr'][:-5] = gdf['ts_end_fr'][5:]
@@ -73,14 +74,11 @@ ax.set_xlabel('Time (ms)')
 ax = axc[1]
 ax.set_title('Firing Rates')
 fr = np.stack(gdf['rates'][T0:TF]).T[:n_channels, :]
-ax.imshow(fr,
-          aspect='auto',
-          interpolation=None)
+ax.imshow(fr, aspect='auto', interpolation=None)
 ax.set_ylabel('Channels')
 ax.set_xlabel('Time (ms)')
 ax.set_yticks([])
 ax.spines['left'].set_visible(False)
-
 
 ax = axc[2]
 ax.set_title('Spikes')
@@ -97,7 +95,6 @@ ax.set_xlabel('Time (ms)')
 ax.set_yticks([])
 ax.spines['left'].set_visible(False)
 
-
 # Plot continuous data
 if len(axc) > 3:
     ax = axc[3]
@@ -113,7 +110,7 @@ if len(axc) > 3:
         ax.set_title(f'Array {r+1}')
         for i in range(n_channels - n_30k_channels, n_channels):
             data_30k = continuous1[int(r * N_per_array + i),
-                                tslice] + i * scale_continuous1
+                                   tslice] + i * scale_continuous1
             ax.plot(np.linspace(0, len(data_30k) / 30, num=len(data_30k)),
                     data_30k,
                     label=f'Channel {int(r*N_per_array+i)}')
@@ -204,7 +201,7 @@ if len(axs) > 3:
         ax.set_title(f'Array {r+1}')
         for i in range(n_channels - n_30k_channels, n_channels):
             data_30k = continuous1[int(r * N_per_array + i),
-                                tslice] + i * scale_continuous1
+                                   tslice] + i * scale_continuous1
             ax.plot(np.linspace(0, len(data_30k) / 30, num=len(data_30k)),
                     data_30k,
                     label=f'Channel {int(r*N_per_array+i)}')
@@ -217,9 +214,9 @@ if len(axs) > 3:
 plt.tight_layout()
 plt.savefig(os.path.join(PLOT_DIR, 'fig5b.pdf'))
 
-
 # %%
-with open(os.path.join(DATA_DIR, 'simulator', cursor_sim_latency_file), 'rb') as f:
+with open(os.path.join(DATA_DIR, 'simulator', cursor_sim_latency_file),
+          'rb') as f:
     latency_df = pd.read_csv(f)
 
 # truncate at 60,000 samples and convert to millisecond units
@@ -266,8 +263,8 @@ axc[1].set_yticks(ticks=np.arange(latency_df.shape[1]), labels=labels)
 # Speech Sim
 axs = axes[0, :]
 # load data
-latency_dict = scipy.io.loadmat(os.path.join(DATA_DIR, 'speech_sim',
-                                             'mic_sim_latencies.mat'))
+latency_dict = scipy.io.loadmat(
+    os.path.join(DATA_DIR, 'speech_sim', 'mic_sim_latencies.mat'))
 
 # Make plots
 ts_labels = {

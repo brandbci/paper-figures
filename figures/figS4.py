@@ -32,6 +32,7 @@ matplotlib.rcParams['font.size'] = 10
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 sns_palette = sns.color_palette(colors)
 
+
 # Helper functions
 def parse_test_id(test_id):
     n_nodes, n_chans = test_id.split('-')
@@ -39,13 +40,15 @@ def parse_test_id(test_id):
     n_chans = int(n_chans[:-1])
     return n_nodes, n_chans
 
+
 def get_csv_key(csv_file):
     return os.path.basename(csv_file).split('_')[-1].split('.')[0]
 
+
 def csvs_to_df_dict(csv_pattern):
     csv_files = glob(os.path.join(DATA_DIR, csv_pattern))
-    return {get_csv_key(f): pd.read_csv(f) 
-             for f in csv_files}
+    return {get_csv_key(f): pd.read_csv(f) for f in csv_files}
+
 
 # %%
 # Load data

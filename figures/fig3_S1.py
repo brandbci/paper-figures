@@ -88,8 +88,12 @@ for fig_name, timing_df in timing_dfs.items():
     all_ts_fields = {}
     for i in range(2):
         ts_fields = [
-            f'ts_nn{i + 1}', # 
-            f'ts_tc{i + 1}', 'ts_bs', 'ts_nr', 'ts_wf', 'ts_cv',
+            f'ts_nn{i + 1}',  # 
+            f'ts_tc{i + 1}',
+            'ts_bs',
+            'ts_nr',
+            'ts_wf',
+            'ts_cv',
             'ts_cd'
         ]
         if not USE_NORM:
@@ -107,9 +111,10 @@ for fig_name, timing_df in timing_dfs.items():
 
     cs_latency_df1 = latency_df1.cumsum(axis=1)
     cs_latency_df2 = latency_df2.cumsum(axis=1)
-    max_cs_latencies = np.max(np.stack((cs_latency_df1, cs_latency_df2)), axis=0)
+    max_cs_latencies = np.max(np.stack((cs_latency_df1, cs_latency_df2)),
+                              axis=0)
     max_cs_latency_df = pd.DataFrame(max_cs_latencies,
-                                    columns=cs_latency_df1.columns)
+                                     columns=cs_latency_df1.columns)
 
     # plot per-node latency as a histogram
     step = 10e-3
@@ -138,11 +143,11 @@ for fig_name, timing_df in timing_dfs.items():
     labels = [ts_labels[field] for field in max_cs_latency_df.columns]
     palette = [colors[field] for field in max_cs_latency_df.columns]
     sns.violinplot(data=max_cs_latency_df * 1e-6,
-                scale='width',
-                linewidth=0.2,
-                orient='h',
-                ax=axr[1],
-                palette=palette)
+                   scale='width',
+                   linewidth=0.2,
+                   orient='h',
+                   ax=axr[1],
+                   palette=palette)
     axr[1].set_xlabel('Cumulative Latency (ms)')
     axr[1].set_yticks(ticks=np.arange(max_cs_latency_df.shape[1]))
     axr[1].set_yticklabels(labels=labels)
@@ -170,13 +175,15 @@ for fig_name, timing_df in timing_dfs.items():
 # Plot cursor position from T11 session
 cursor_pos_files = {k: v for k, v in DATA_FILES.items() if 'cursor_pos' in v}
 
+
 def get_csv_key(csv_file):
     return os.path.basename(csv_file).split('_')[-1].split('.')[0]
 
+
 def csvs_to_df_dict(csv_pattern):
     csv_files = glob(os.path.join(DATA_DIR, csv_pattern))
-    return {get_csv_key(f): pd.read_csv(f) 
-             for f in csv_files}
+    return {get_csv_key(f): pd.read_csv(f) for f in csv_files}
+
 
 kin_fields = ['cursorData_X', 'cursorData_Y']
 for fig_name, file_pattern in cursor_pos_files.items():
@@ -205,10 +212,7 @@ for fig_name, file_pattern in cursor_pos_files.items():
             Circle((x, y), radius, edgecolor='k', facecolor=((0, 0, 0, 0))))
 
     # find outward trials for this condition
-    mask = np.all((
-        trial_info['cond_id'] > 0,
-    ),
-                axis=0)
+    mask = np.all((trial_info['cond_id'] > 0, ), axis=0)
     tinfo = trial_info[mask]
 
     # plot data for each trial

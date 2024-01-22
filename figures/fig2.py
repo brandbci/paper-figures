@@ -46,15 +46,17 @@ bp_kwargs = dict(linewidth=0.2,
 # make plot directory if it doesn't exist
 os.makedirs(PLOT_DIR, exist_ok=True)
 
+
 # %%
 # Load data
 def get_csv_key(csv_file):
     return int(os.path.basename(csv_file).split('_')[-1].split('.')[0])
 
+
 def csvs_to_df_dict(csv_pattern):
     csv_files = glob(os.path.join(DATA_DIR, csv_pattern))
-    return {get_csv_key(f): pd.read_csv(f) 
-             for f in csv_files}
+    return {get_csv_key(f): pd.read_csv(f) for f in csv_files}
+
 
 ch_df = pd.read_csv(os.path.join(DATA_DIR, vary_channels_file))
 sr_df = pd.read_csv(os.path.join(DATA_DIR, vary_sample_rate_file))

@@ -78,9 +78,8 @@ for i, timing_df in enumerate(timing_dfs):
     all_ts_fields = {}
     for i in range(2):
         ts_fields = [
-            f'ts_nn{i + 1}',
-            f'ts_tc{i + 1}', 'ts_bs', 'ts_nr', 'ts_lfads', 'ts_wf', 'ts_cv',
-            'ts_cd'
+            f'ts_nn{i + 1}', f'ts_tc{i + 1}', 'ts_bs', 'ts_nr', 'ts_lfads',
+            'ts_wf', 'ts_cv', 'ts_cd'
         ]
         if not USE_NORM:
             ts_fields.remove('ts_nr')
@@ -99,9 +98,10 @@ for i, timing_df in enumerate(timing_dfs):
 
     cs_latency_df1 = latency_df1.cumsum(axis=1)
     cs_latency_df2 = latency_df2.cumsum(axis=1)
-    max_cs_latencies = np.max(np.stack((cs_latency_df1, cs_latency_df2)), axis=0)
+    max_cs_latencies = np.max(np.stack((cs_latency_df1, cs_latency_df2)),
+                              axis=0)
     max_cs_latency_df = pd.DataFrame(max_cs_latencies,
-                                    columns=cs_latency_df1.columns)
+                                     columns=cs_latency_df1.columns)
 
     # plot per-node latency as a histogram
     step = 10e-3
@@ -130,11 +130,11 @@ for i, timing_df in enumerate(timing_dfs):
     labels = [ts_labels[field] for field in max_cs_latency_df.columns]
     palette = [colors[field] for field in max_cs_latency_df.columns]
     sns.violinplot(data=max_cs_latency_df * 1e-6,
-                scale='width',
-                linewidth=0.2,
-                orient='h',
-                ax=axr[1],
-                palette=palette)
+                   scale='width',
+                   linewidth=0.2,
+                   orient='h',
+                   ax=axr[1],
+                   palette=palette)
     axr[1].set_xlabel('Cumulative Latency (ms)')
     axr[1].set_yticks(ticks=np.arange(max_cs_latency_df.shape[1]))
     axr[1].set_yticklabels(labels=labels)
